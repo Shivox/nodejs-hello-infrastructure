@@ -1,0 +1,91 @@
+master:
+  JCasC:
+    configScripts:
+      secrets: |
+        credentials:
+          system:
+            domainCredentials:
+            - credentials:
+              - basicSSHUserPrivateKey:
+                  id: "shivox-at-github"
+                  privateKeySource:
+                    directEntry:
+                      privateKey: "TODO: REMOVE"
+                  scope: GLOBAL
+                  username: "shivox"
+        jenkins:
+          clouds:
+          - kubernetes:
+              jenkinsTunnel: "jenkins-agent.default.svc.ppro.dev:31657"
+              jenkinsUrl: "http://jenkins.default.svc.ppro.dev:8080"
+              name: "kubernetes-dev"
+              namespace: "default"
+              maxRequestsPerHost: 32
+              maxRequestsPerHostStr: "32"
+              serverUrl: "https://${DEV_CLUSTER_IP}:8443"
+          - kubernetes:
+              credentialsId: "jenkins-at-prod-k8s"
+              jenkinsTunnel: "${DEV_CLUSTER_IP}:31657"
+              maxRequestsPerHost: 32
+              maxRequestsPerHostStr: "32"
+              name: "kubernetes-prod"
+              namespace: "default"
+              serverUrl: "https://${PROD_CLUSTER_IP}:8443"
+        jobs:
+          - script: >
+              multibranchPipelineJob('nodejs-hello-build') {
+                  branchSources {
+                      git {
+                          id = 'nodejs-hello-build'
+                          remote('https://github.com/Shivox/nodejs-hello.git')
+                      }
+                  }
+                  factory {
+                      workflowBranchProjectFactory {
+                          scriptPath('Jenkinsfile.build')
+                      }
+                  }
+              }
+          - script: >
+              multibranchPipelineJob('nodejs-hello-deploy-dev') {
+                  branchSources {
+                      git {
+                          id = 'nodejs-hello-deploy-dev'
+                          remote('https://github.com/Shivox/nodejs-hello.git')
+                      }
+                  }
+                  factory {
+                      workflowBranchProjectFactory {
+                          scriptPath('Jenkinsfile-dev.deploy')
+                      }
+                  }
+              }
+          - script: >
+              multibranchPipelineJob('nodejs-hello-deploy-prod') {
+                  branchSources {
+                      git {
+                          id = 'nodejs-hello-deploy-prod'
+                          remote('https://github.com/Shivox/nodejs-hello.git')
+                      }
+                  }
+                  factory {
+                      workflowBranchProjectFactory {
+                          scriptPath('Jenkinsfile-prod.deploy')
+                      }
+                  }
+              }
+  slaveListenerServiceType: NodePort
+  slaveListenerPort: 31657
+  sidecars:
+    configAutoReload:
+      enabled: false
+  numExecutors: 1
+  additionalPlugins:
+    - pipeline-utility-steps
+    - job-dsl
+    - kubernetes-credentials-provider
+  ingress:
+    enabled: true
+    hostName: jenkins.ppro.dev
+rbac:
+    readSecrets: true
