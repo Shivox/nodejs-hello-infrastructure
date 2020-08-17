@@ -75,11 +75,11 @@ verify_programs() {
 
 print_hosts() {
   echo "Setup: Please update your /etc/hosts with the following lines in order to access the services"
-  echo "##############################################" | indent
-  echo "$(minikube ip --profile=dev-cluster) jenkins.ppro.dev" | indent
-  echo "$(minikube ip --profile=dev-cluster) nodejs-hello.ppro.dev" | indent
-  echo "$(minikube ip --profile=prod-cluster) jenkins.ppro.prod" | indent
-  echo "##############################################" | indent
+  echo "##############################################"
+  echo "$(minikube ip --profile=dev-cluster) jenkins.ppro.dev"
+  echo "$(minikube ip --profile=dev-cluster) nodejs-hello.ppro.dev"
+  echo "$(minikube ip --profile=prod-cluster) nodejs-hello.ppro.prod"
+  echo "##############################################"
 }
 
 # Ensures that the number of passed args are at least equals
