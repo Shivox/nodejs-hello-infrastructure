@@ -41,6 +41,7 @@ deploy_jenkins() {
   echo "Setup: deploying Jenkins Chart to dev cluster"
   echo "Setting up Jenkins secrets" | indent
   kubectl apply -f ./jenkins/secrets.yaml | indent
+  helm repo add stable https://kubernetes-charts.storage.googleapis.com/
   helm install jenkins stable/jenkins --version=2.5.0 \
     --set master.containerEnv[0].name=DEV_CLUSTER_IP \
     --set master.containerEnv[0].value=$(minikube ip --profile=dev-cluster) \
@@ -78,7 +79,7 @@ print_hosts() {
   echo "$(minikube ip --profile=dev-cluster) jenkins.ppro.dev" | indent
   echo "$(minikube ip --profile=dev-cluster) nodejs-hello.ppro.dev" | indent
   echo "$(minikube ip --profile=prod-cluster) jenkins.ppro.prod" | indent
-  echo "##############################################"
+  echo "##############################################" | indent
 }
 
 # Ensures that the number of passed args are at least equals
