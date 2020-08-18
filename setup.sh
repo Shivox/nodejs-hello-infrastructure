@@ -24,14 +24,14 @@ main() {
 
 setup_dev_cluster() {
   echo "Setup: setting up dev cluster"
-  minikube start -p=dev-cluster --driver=$minikube_vm_driver --memory='2000mb' --disk-size='10000mb' --addons=ingress --dns-domain=ppro.dev --embed-certs=true
+  minikube start -p=dev-cluster --driver=$minikube_vm_driver --memory='3000m' --disk-size='10000mb' --addons=ingress --dns-domain=ppro.dev --embed-certs=true
   echo "Setup: creating RBAC objects for helm in dev cluster"
   kubectl apply -f ./jenkins/rbac.yaml | indent
 }
 
 setup_prod_cluster() {
   echo "Setup: setting up prod cluster"
-  minikube start -p=prod-cluster --driver=$minikube_vm_driver --memory='2000mb' --disk-size='10000mb' --addons=ingress --dns-domain=ppro.prod --embed-certs=true
+  minikube start -p=prod-cluster --driver=$minikube_vm_driver --memory='3000m' --disk-size='10000mb' --addons=ingress --dns-domain=ppro.prod --embed-certs=true
   echo "Setup: creating RBAC objects for helm in prod cluster"
   kubectl apply -f ./jenkins/rbac.yaml | indent
 }
